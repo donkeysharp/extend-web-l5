@@ -1,0 +1,10 @@
+* Complete all TODO: new
+* On export controller import Excel class correctly, see if there are providers missing ;) in ExportControler and NewsController
+
+* Set providers for third party
+* Update models User and login process :3
+* Work with email !!!!
+* Update configurations
+* Make frontend work here, depending on what they want new use new react with webpack :v
+* Full regression tests
+*
