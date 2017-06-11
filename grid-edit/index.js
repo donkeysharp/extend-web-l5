@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import Foo from './components/Foo';
+import GridSearchContainer from './containers/GridSearchContainer';
 
 document.addEventListener('DOMContentLoaded', () => {
   let el = document.getElementById('grid-root');
-  render(<Foo />, el);
+  render(<GridSearchContainer />, el);
 });
