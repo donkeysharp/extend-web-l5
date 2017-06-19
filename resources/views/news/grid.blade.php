@@ -7,7 +7,7 @@
 @section('scripts')
 <script src="{{asset('assets/vendors/js/bootstrap-datepicker.min.js')}}"></script>
 <script src="{{asset('assets/vendors/js/bootstrap-datepicker.es.min.js')}}"></script>
-<script src="{{asset('assets/js/grid.bundle.js')}}"></script>
+<script src="{{asset('assets/js/grid.wp.bundle.js')}}"></script>
 @endsection
 
 @section('styles')
