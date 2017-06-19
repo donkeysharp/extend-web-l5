@@ -4,7 +4,7 @@
   "description": "React module for grid edition for news",
   "main": "index.js",
   "scripts": {
-    "watch:js": "watchify ./index.js -o ../public/assets/js/grid.bundle.js -t [ babelify --presets [es2015 react] ] -v"
+    "watch:js": "webpack --watch --config webpack.config.js"
   },
   "author": "donkeysharp",
   "license": "MIT",
