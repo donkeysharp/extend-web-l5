@@ -15,7 +15,8 @@ class GridEditController extends Controller
 
     public function index(Request $r)
     {
-        $newsColumns = ['news.date', 'news.press_note', 'news.code', 'news.clasification', 'news_details.*'];
+        // $newsColumns = ['news.date', 'news.press_note', 'news.code', 'news.clasification', 'news_details.*'];
+        $newsColumns = ['news_details.*'];
 
         // Log::info("Grid Edit Search:");
         // Log::info("From Date: $fromDate To Date: $toDate ClientId: $clientId");
@@ -37,6 +38,7 @@ class GridEditController extends Controller
                 $q = $q->with('client');
             }
         ]);
+        $query->with('media')->with('topic');
         $query->join('news', 'news_details.news_id', '=', 'news.id');
 
         $dateField = 'date';

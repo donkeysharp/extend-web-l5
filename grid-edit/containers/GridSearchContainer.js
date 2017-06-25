@@ -11,6 +11,10 @@ class GridSearchContainer extends React.Component {
     super(props);
     this.state = {
       clients: [],
+      media: [],
+      sources: [],
+      subtitles: [],
+      topics: [],
       news: {
         isFetching: false,
         data: []
@@ -18,9 +22,22 @@ class GridSearchContainer extends React.Component {
     }
   }
   componentDidMount() {
-    $http.get('/clients').then((res) => {
-      this.setState({ clients: res})
-    })
+    let extraParams = {
+      clients: true,
+      topics: true,
+      media: true,
+      subtitles: true,
+      sources: true
+    };
+    $http.get('/news/extra', extraParams).then((res) => {
+      this.setState({
+        clients: res.clients,
+        media: res.media,
+        sources: res.sources,
+        subtitles: res.subtitles,
+        topics: res.topics
+      });
+    });
   }
   handleOnSearch(data) {
     let news = this.state.news;
@@ -38,7 +55,15 @@ class GridSearchContainer extends React.Component {
     if (this.state.news.isFetching) {
       return <Spinner />
     } else if (this.state.news.data.length !== 0) {
-      return <NewsGrid news={this.state.news.data} />
+      return (
+        <NewsGrid
+          clients={this.state.clients}
+          media={this.state.media}
+          sources={this.state.sources}
+          subtitles={this.state.subtitles}
+          topics={this.state.topics}
+          news={this.state.news.data} />
+      );
     }
     return <h4>No se encontraron noticias</h4>
   }
