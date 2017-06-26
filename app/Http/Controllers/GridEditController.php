@@ -2,9 +2,11 @@
 
 use Illuminate\Http\Request;
 use App\Models\NewsDetail;
+use App\Models\News;
 use Carbon\Carbon;
 use Log;
 use DateTime;
+use DB;
 
 class GridEditController extends Controller
 {
@@ -15,8 +17,7 @@ class GridEditController extends Controller
 
     public function index(Request $r)
     {
-        // $newsColumns = ['news.date', 'news.press_note', 'news.code', 'news.clasification', 'news_details.*'];
-        $newsColumns = ['news_details.*'];
+        $newsColumns = ['news_details.*', 'clients.name as client_name', 'media.name as media_name', 'topics.name as topic_name', 'news.client_id'];
 
         // Log::info("Grid Edit Search:");
         // Log::info("From Date: $fromDate To Date: $toDate ClientId: $clientId");
@@ -33,12 +34,12 @@ class GridEditController extends Controller
         $searchBy = $r->get('searchBy', false);
         $clientId = $r->get('clientId', false);
 
-        $query = NewsDetail::with([
-            'news' => function($q) {
-                $q = $q->with('client');
-            }
-        ]);
-        $query->with('media')->with('topic');
+        $query = NewsDetail::with('news');
+            // 'news' => function($q) {
+            //     $q = $q->with('client');
+            // }
+        // ]);
+        // $query->with('media')->with('topic');
         $query->join('news', 'news_details.news_id', '=', 'news.id');
 
         $dateField = 'date';
@@ -59,6 +60,9 @@ class GridEditController extends Controller
         } else {
             $toDate = $now;
         }
+        $query->leftJoin('clients', 'clients.id', '=', 'client_id');
+        $query->leftJoin('media', 'media.id', '=', 'media_id');
+        $query->leftJoin('topics', 'topics.id', '=', 'topic_id');
         $query->where($dateField, '>=', $fromDate);
         $query->where($dateField, '<=', $toDate);
 
@@ -70,6 +74,60 @@ class GridEditController extends Controller
             });
         }
 
+        $query->orderBy('created_at', 'desc');
+
         return $query;
+    }
+
+    public function update(Request $r)
+    {
+        DB::beginTransaction();
+
+        $result = 'failed';
+        try {
+            $data = $r->all();
+            $newsData = [];
+            foreach($data as $item) {
+                if (!isset($item['news_id'])) {
+                    $newsData[$item['news_id']] = [];
+                }
+                $newsData[$item['news_id']][] = $item;
+            }
+
+            foreach ($newsData as $key => $newsDetails) {
+                print_r($newsDetails);
+                $news = News::findOrFail($key);
+                $news->code = $newsDetails['news']['code'];
+                $news->clasification = $newsDetails['news']['clasification'];
+                $news->client_id = $newsDetails['news']['client_id'];
+                // $news->save();
+
+                foreach ($newsDetails as $item) {
+                    $newsDetail = NewsDetail::findOrFail($item['id']);
+                    $newsDetail->media_id = $item['media_id'];
+                    $newsDetail->title = $item['title'];
+                    $newsDetail->measure = $item['measure'];
+                    $newsDetail->cost = $item['cost'];
+                    $newsDetail->topic_id = $item['topic_id'];
+                    $newsDetail->tendency = $item['tendency'];
+                    $newsDetail->type = $item['type'];
+                    $newsDetail->section = $item['section'];
+                    $newsDetail->page = $item['page'];
+                    $newsDetail->source = $item['source'];
+                    $newsDetail->alias = $item['alias'];
+                    $newsDetail->gender = $item['gender'];
+                    $newsDetail->subtitle = $item['subtitle'];
+                    // $newsDetail->save();
+                }
+            }
+            $result = 'success';
+            DB::commit();
+        } catch(Exception $e) {
+            DB::rollback();
+        }
+
+        return response()->json([
+            'status' => $result
+        ]);
     }
 }

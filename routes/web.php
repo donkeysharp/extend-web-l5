@@ -57,6 +57,7 @@ Route::group(['middleware' => 'auth'], function(){
 Route::group(['middleware' => 'auth'], function() {
     Route::get('dashboard/grid/edit', ['uses' => 'GridEditController@view']);
     Route::get('grid/news/', ['uses' => 'GridEditController@index']);
+    Route::put('grid/news/', ['uses' => 'GridEditController@update']);
 });
 
 Route::group(['middleware' => 'auth'], function() {
