@@ -19,6 +19,7 @@ class GridSearchContainer extends React.Component {
         isFetching: false,
         data: []
       },
+      searchData: {}
     }
   }
   componentDidMount() {
@@ -41,7 +42,10 @@ class GridSearchContainer extends React.Component {
   }
   handleOnSearch(data) {
     let news = this.state.news;
-    this.setState({news: Object.assign({}, news, { isFetching: true })})
+    this.setState({
+      news: Object.assign({}, news, { isFetching: true }),
+      searchData: data
+    });
     $http.get('/grid/news', data).then((res) => {
       let news = this.state.news;
       let newState = {
@@ -49,7 +53,37 @@ class GridSearchContainer extends React.Component {
         data: res
       };
       this.setState({news: Object.assign({}, news, newState)});
-    })
+    });
+  }
+  handleOnCellChange(index, updated) {
+    let news = this.state.news.data;
+
+    if ('code' in updated || 'clasification' in updated) {
+      news[index].news = Object.assign({}, news[index].news, updated);
+    } else {
+      news[index] = Object.assign({}, news[index], updated);
+    }
+
+    this.setState({
+      news: {
+        isFetching: false,
+        data: news
+      }
+    });
+  }
+  handleOnSaveClick() {
+    console.log(this.state.news.data);
+    $http.put('/grid/news', this.state.news.data).then((res) => {
+      $http.get('/grid/news', this.state.searchData).then((res) => {
+        let news = this.state.news;
+        let newState = {
+          isFetching: false,
+          data: res
+        };
+        this.setState({news: Object.assign({}, news, newState)});
+      });
+    });
+
   }
   getContentBody() {
     if (this.state.news.isFetching) {
@@ -57,6 +91,8 @@ class GridSearchContainer extends React.Component {
     } else if (this.state.news.data.length !== 0) {
       return (
         <NewsGrid
+          onCellChange={this.handleOnCellChange.bind(this)}
+          onSaveClick={this.handleOnSaveClick.bind(this)}
           clients={this.state.clients}
           media={this.state.media}
           sources={this.state.sources}

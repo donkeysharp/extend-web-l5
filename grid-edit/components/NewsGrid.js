@@ -16,8 +16,12 @@ function getComponents(items) {
     });
   })
   return {
-    DropDownEditor: <DropDownEditor options={componentTypes} />,
-    DropDownFormatter: <DropDownFormatter options={componentTypes} value={items[0].id+''} />
+    DropDownEditor: <DropDownEditor
+      options={componentTypes}
+    />,
+    DropDownFormatter: <DropDownFormatter
+      options={componentTypes} value={items[0].id+''}
+    />
   }
 }
 
@@ -80,12 +84,12 @@ class NewsGrid extends React.Component {
       DropDownFormatter: typeDDF
     } = getTypeComponents();
 
-    this.createNewsRows();
+    // this.createNewsRows();
     this._columns = [
       { key: 'index', name: 'Nro', width: 40 },
       { key: 'date', name: 'Fecha', width: 90 },
       {
-        key: 'client',
+        key: 'client_id',
         name: 'Cliente',
         width: 100,
         editable: true,
@@ -93,7 +97,7 @@ class NewsGrid extends React.Component {
         formatter: clientDDF
       },
       {
-        key: 'eye',
+        key: 'clasification',
         name: 'Ojo',
         width: 60,
         editable: true,
@@ -101,7 +105,7 @@ class NewsGrid extends React.Component {
         formatter: classificationDDF
       },
       {
-        key: 'media',
+        key: 'media_id',
         name: 'Medio',
         width: 100,
         editable: true,
@@ -109,10 +113,10 @@ class NewsGrid extends React.Component {
         formatter: mediaDDF
       },
       { key: 'title', name: 'Título Artículo', width: 300, editable: true },
-      { key: 'pixels', name: 'Pixeles cm. col', editable: true },
-      { key: 'equivalence', name: 'Equivalencia Publicitaria en Dólares', editable: true },
+      { key: 'measure', name: 'Pixeles cm. col', editable: true },
+      { key: 'cost', name: 'Equivalencia Publicitaria en Dólares', editable: true },
       {
-        key: 'topic',
+        key: 'topic_id',
         name: 'Tema',
         width: 100,
         editable: true,
@@ -143,47 +147,44 @@ class NewsGrid extends React.Component {
       { key: 'subtitle', name: 'Subtítulo', width: 300, editable: true }
     ];
   }
-  createNewsRows() {
-    let rows = [];
-    this.props.news.forEach((item, idx) => {
+  parseRow(index) {
 
-      rows.push({
-        index: idx + 1,
-        date: item.news ? item.news.date: '',
-        client: item.news.client ? item.news.client.name : '',
-        eye: item.news ? item.news.clasification : '',
-        media: item.media ? item.media.name : '',
-        title: item.title ? item.title : '',
-        pixels: item.measure ? item.measure : '',
-        equivalence: item.cost ? item.cost : '',
-        topic: item.topic ? item.topic.name : '',
-        tendency: item.tendency ? item.tendency : '',
-        type: item.type ? item.type : '',
-        section: item.section ? item.section : '',
-        page: item.page ? item.page : '',
-        code: item.code ? item.code : '',
-        source: item.source ? item.source : '',
-        alias: item.alias ? item.alias : '',
-        gender: item.gender ? item.gender : '',
-        subtitle: item.subtitle ? item.subtitle : '',
-      })
-    });
-    this._rows = rows;
-  }
-  rowGetter(i) {
-    return this._rows[i];
+    let item = this.props.news[index];
+    return {
+      index: index + 1,
+      date: item.news ? item.news.date: '',
+      client_id: item.client_id ? item.client_id : '',
+      clasification: item.news ? item.news.clasification : '',
+      media_id: item.media_id ? item.media_id : '',
+      title: item.title ? item.title : '',
+      measure: item.measure ? item.measure : '',
+      cost: item.cost ? item.cost : '',
+      topic_id: item.topic_id ? item.topic_id : '',
+      tendency: item.tendency ? item.tendency : '',
+      type: item.type ? item.type : '',
+      section: item.section ? item.section : '',
+      page: item.page ? item.page : '',
+      code: item.news.code ? item.news.code : '',
+      source: item.source ? item.source : '',
+      alias: item.alias ? item.alias : '',
+      gender: item.gender ? item.gender : '',
+      subtitle: item.subtitle ? item.subtitle : '',
+    };
   }
   handleGridRowsUpdated({ fromRow, toRow, updated }) {
-    console.log(fromRow, toRow, updated)
-    this._rows[fromRow] = Object.assign({}, this._rows[fromRow], updated);
+    if (this.props.onCellChange) {
+      this.props.onCellChange(fromRow, updated);
+    }
   }
   handleSaveClick() {
-    console.log(this._rows)
+    if (this.props.onSaveClick) {
+      this.props.onSaveClick();
+    }
   }
   render() {
     return <div>
       <div className="row">
-        <div className="col-md-1 col-md-offset-11">
+        <div className="col-md-1">
           <button
             className="btn btn-primary"
             onClick={this.handleSaveClick.bind(this)}>
@@ -195,9 +196,9 @@ class NewsGrid extends React.Component {
         columns={this._columns}
         cellNavigationMode={'changeRow'}
         enableCellSelect={true}
-        rowGetter={this.rowGetter.bind(this)}
-        rowsCount={this._rows.length}
-        minHeight={1500}
+        rowGetter={this.parseRow.bind(this)}
+        rowsCount={this.props.news.length}
+        minHeight={500}
         onGridRowsUpdated={this.handleGridRowsUpdated.bind(this)} />
     </div>;
   }

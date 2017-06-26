@@ -7,7 +7,8 @@ function getCurrentDate() {
   let month = trailingZero(today.getMonth() + 1);
   let year = today.getFullYear();
 
-  return `${day}/${month}/${year}`;
+  // return `${day}/${month}/${year}`;
+  return '08/03/2016';
 }
 
 class SearchForm extends React.Component {
