@@ -95,14 +95,13 @@ class GridEditController extends Controller
             }
 
             foreach ($newsData as $key => $newsDetails) {
-                print_r($newsDetails);
                 $news = News::findOrFail($key);
-                $news->code = $newsDetails['news']['code'];
-                $news->clasification = $newsDetails['news']['clasification'];
-                $news->client_id = $newsDetails['news']['client_id'];
-                // $news->save();
 
                 foreach ($newsDetails as $item) {
+                    $news->code = $item['news']['code'];
+                    $news->clasification = $item['news']['clasification'];
+                    $news->client_id = $item['news']['client_id'];
+
                     $newsDetail = NewsDetail::findOrFail($item['id']);
                     $newsDetail->media_id = $item['media_id'];
                     $newsDetail->title = $item['title'];
@@ -117,8 +116,9 @@ class GridEditController extends Controller
                     $newsDetail->alias = $item['alias'];
                     $newsDetail->gender = $item['gender'];
                     $newsDetail->subtitle = $item['subtitle'];
-                    // $newsDetail->save();
+                    $newsDetail->save();
                 }
+                $news->save();
             }
             $result = 'success';
             DB::commit();
