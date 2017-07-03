@@ -1,9 +1,7 @@
 import React from 'react';
 import ReactDataGrid from 'react-data-grid';
-import {Editors, Formatters} from 'react-data-grid-addons';
-
-const { DropDownEditor } = Editors;
-const { DropDownFormatter } = Formatters;
+import {DropDownEditor} from './react-data-grid-addons/editors';
+import {DropDownFormatter} from './react-data-grid-addons/formatters';
 
 function getComponents(items) {
   let componentTypes = [];
@@ -20,7 +18,7 @@ function getComponents(items) {
       options={componentTypes}
     />,
     DropDownFormatter: <DropDownFormatter
-      options={componentTypes} value={items[0].id+''}
+      options={componentTypes} value={items[0].id + ''}
     />
   }
 }
