@@ -1,22 +1,3 @@
-var path = require('path');
-
-module.exports = {
-  entry: './index.js',
-  output: {
-    path: path.join(__dirname, '../public/assets/js'),
-    filename: 'grid.wp.bundle.js'
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['es2015', 'react']
-          }
-        }
-      }
-    ]
-  }
+module.exports = function(env) {
+  return require(`./webpack.${env}.js`)
 }
